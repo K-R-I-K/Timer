@@ -24,6 +24,7 @@ namespace timerc
         List<DateTime> Alarm = new List<DateTime>();
         List<bool> typeOfTimer = new List<bool>();
         string tmpstring;
+        bool flsort = true;
         //int tmptime, tmpday;
         //Tuple<int, int> tmppair;
         DateTime curTime;
@@ -59,7 +60,7 @@ namespace timerc
                         else
                         {
                             --Timers[timerCount];
-                            listOfTimers.Items[i] = IntToStringTime(Timers[timerCount]);
+                            if(flsort) listOfTimers.Items[i] = IntToStringTime(Timers[timerCount]);
                             ++timerCount;
                         }
                     }
@@ -80,6 +81,16 @@ namespace timerc
                             ++alarmCount;
                     }
                 }
+
+
+            }
+        }
+
+        private void ShowOnlyTimers()
+        {
+            for (int i = 0; i < Timers.Count; ++i)
+            {
+                listOfTimers.Items.Add(IntToStringTime(Timers[i]));
             }
         }
 
@@ -112,12 +123,110 @@ namespace timerc
         private void timerMode_CheckedChanged(object sender, EventArgs e)
         {
             time.Format = DateTimePickerFormat.Time;
-        }
+            time.Value = DateTime.Now.Date;
+        }        
 
         private void alarmMode_CheckedChanged(object sender, EventArgs e)
         {
             time.Format = DateTimePickerFormat.Custom;
             time.CustomFormat = "MM/dd/yyyy HH:mm:ss";
+            curTime = DateTime.Now;
+            time.Value = curTime;
+        }
+
+        int index;
+
+        private void listOfTimers_SelectedValueChanged(object sender, EventArgs e)
+        {
+            deleteButton.Enabled = true;
+            index = listOfTimers.SelectedIndex;
+        }
+
+        int count;
+        bool fl;
+
+        private void time_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void time_KeyDown(object sender, KeyEventArgs e)
+        {
+            /*if(e.KeyCode == Keys.Tab)
+            {
+                buttonAdd_Click(sender, e);
+                e.SuppressKeyPress = true;
+            }
+            if (e.KeyCode == Keys.Enter)
+            {
+                SendKeys.Send("{TAB}");
+                e.SuppressKeyPress = true;
+            }*/
+        }
+
+        private void listOfTimers_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteButton_Click(sender, e);
+            }
+        }
+
+        private void chronologicallyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listOfTimers.Items.Clear();
+            timerCount = 0;
+            alarmCount = 0;
+            for(int i = 0; i < typeOfTimer.Count; ++i)
+            {
+                if(typeOfTimer[i])
+                {
+                    listOfTimers.Items.Add(IntToStringTime(Timers[timerCount]));
+                    timerCount++;
+                }
+                else
+                {
+                    listOfTimers.Items.Add(Convert.ToString(Alarm[alarmCount]));
+                    alarmCount++;
+                }
+            }
+        }
+
+        private void onlyTimersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            flsort = true;
+            listOfTimers.Items.Clear();
+            for (int i = 0; i < Timers.Count; ++i)
+            {
+                listOfTimers.Items.Add(IntToStringTime(Timers[i]));
+            }
+        }
+
+        private void onlyAlarmsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            flsort = false;
+            listOfTimers.Items.Clear();
+            for (int i = 0; i < Alarm.Count; ++i)
+            {
+                listOfTimers.Items.Add(Convert.ToString(Alarm[i]));
+            }
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            count = -1;
+            fl = typeOfTimer[index];
+            DateTime tmp = DateTime.Now.Date;
+            for (int i = 0; i <= index; ++i)
+                if (fl == typeOfTimer[i])
+                    ++count;
+            if (fl)
+                Timers.RemoveAt(count);
+            else
+                Alarm.RemoveAt(count);
+            typeOfTimer.RemoveAt(index);
+            listOfTimers.Items.RemoveAt(index);
+            deleteButton.Enabled = false;
         }
     }
 }
