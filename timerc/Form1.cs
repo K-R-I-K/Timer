@@ -146,7 +146,7 @@ namespace timerc
                     ShowADeScending(false);
                 }
 
-                if (isChoose && index > -1)
+                if (isChoose && index > -1 && progressBar.Value >= 1)
                 {
                     --progressBar.Value;
                 }
@@ -194,6 +194,7 @@ namespace timerc
             if(index > -1 && listOfTimers.Items.Count > 0)
                 listOfTimers.SetSelected(index, true);
 
+            CountOfTimers = Timers.Count + Alarm.Count;
             menuCountOfTimers.Text = "Count of Timers: " + CountOfTimers;
         }
 
@@ -295,12 +296,13 @@ namespace timerc
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            ++CountOfTimers;
+            //++CountOfTimers;
             if (timerMode.Checked)
             {
                 typeOfTimer.Add(true);
                 tmpstring = time.Value.TimeOfDay.ToString();
-                listOfTimers.Items.Add(tmpstring);
+                if(!onlyAlarmsToolStripMenuItem.Checked)
+                    listOfTimers.Items.Add(tmpstring);
                 Timers.Add(3600 * time.Value.Hour + 60 * time.Value.Minute + time.Value.Second);
                 constTimers.Add(3600 * time.Value.Hour + 60 * time.Value.Minute + time.Value.Second);
             }
@@ -315,7 +317,8 @@ namespace timerc
                 {
                     typeOfTimer.Add(false);
                     tmpstring = time.Value.ToString();
-                    listOfTimers.Items.Add(tmpstring + " (" + getRemainingTime(time.Value).ToString(@"dd\.hh\:mm\:ss") + ")");
+                    if(!onlyTimersToolStripMenuItem.Checked)
+                        listOfTimers.Items.Add(tmpstring + " (" + getRemainingTime(time.Value).ToString(@"dd\.hh\:mm\:ss") + ")");
                     Alarm.Add(time.Value);
                     TimeSpan tmpSpan = getRemainingTime(time.Value);
                     constTimers.Add(0);
